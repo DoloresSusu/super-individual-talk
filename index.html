@@ -301,13 +301,90 @@ html, body {
   white-space: nowrap;
 }
 
+/* ===== Mobile Nav Buttons ===== */
+.mobile-nav {
+  display: none; /* hidden on desktop */
+  position: fixed; bottom: 16px; left: 0; right: 0;
+  justify-content: center; gap: 32px;
+  z-index: 200;
+}
+.nav-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid #ccc;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text);
+  font-size: 24px; line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s, background 0.2s;
+}
+.nav-btn:active { background: rgba(0,0,0,0.08); border-color: var(--red); }
+
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-  .slide { padding: 40px 32px; }
-  .lev-grid { gap: 16px 24px; }
-  .qr-grid { gap: 32px; }
-  .num-row { gap: 20px; }
-  .two-col { flex-direction: column; align-items: center; }
+  .slide {
+    padding: 32px 24px;
+    overflow-y: auto;
+    align-items: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+  .inner { padding: 40px 0; }
+
+  /* Typography scale down */
+  .mega { font-size: clamp(36px, 10vw, 56px); }
+  .big  { font-size: clamp(28px, 7vw, 40px); }
+  .large { font-size: clamp(22px, 5vw, 32px); }
+  .mid  { font-size: clamp(15px, 3.8vw, 20px); }
+  .sm   { font-size: clamp(12px, 3vw, 15px); }
+
+  /* TOC: stack label and sub vertically */
+  .toc-item {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    padding: 12px 0;
+  }
+  .toc-label { font-size: clamp(16px, 4.5vw, 22px); }
+  .toc-sub {
+    white-space: normal;
+    margin-left: 40px;
+    font-size: clamp(12px, 3vw, 14px);
+  }
+
+  /* Leverage grid */
+  .lev-grid { gap: 12px 16px; }
+  .lev-card { padding: 16px 12px; }
+  .lev-card .label { font-size: clamp(22px, 6vw, 32px); }
+
+  /* Number row */
+  .num-row { gap: 16px; }
+  .num-block .num { font-size: clamp(48px, 15vw, 80px); }
+
+  /* Two column */
+  .two-col { flex-direction: column; align-items: center; gap: 28px; }
+
+  /* QR grid: 3 items in a row on mobile */
+  .qr-grid { gap: 16px; }
+  .qr-item .placeholder {
+    width: 100px; height: 100px;
+    padding: 8px; margin-bottom: 8px;
+  }
+
+  /* Section tag */
+  .section-tag { top: 12px; left: 16px; }
+
+  /* Spacers smaller on mobile */
+  .spacer-xl { height: 32px; }
+  .spacer-l  { height: 24px; }
+  .spacer    { height: 16px; }
+  .spacer-s  { height: 8px; }
+
+  /* Counter & progress */
+  .counter { bottom: 10px; right: 14px; font-size: 11px; }
+  .hint { display: none; } /* hide keyboard hint on mobile */
+  .mobile-nav { display: flex; } /* show nav buttons on mobile */
 }
 </style>
 </head>
@@ -704,8 +781,14 @@ html, body {
 <!-- Slide counter -->
 <div class="counter" id="counter">1 / 21</div>
 
-<!-- Keyboard hint -->
+<!-- Keyboard hint (desktop) -->
 <div class="hint" id="hint">← →  翻页　｜　G + 数字  跳页　｜　F  全屏</div>
+
+<!-- Mobile nav buttons -->
+<div class="mobile-nav" id="mobile-nav">
+  <button class="nav-btn" id="btn-prev" aria-label="上一页">‹</button>
+  <button class="nav-btn" id="btn-next" aria-label="下一页">›</button>
+</div>
 
 <script>
 (function() {
@@ -725,6 +808,9 @@ html, body {
     slides[current].classList.remove('active');
     current = index;
     slides[current].classList.add('active');
+
+    // Scroll new slide back to top (for mobile overflow)
+    slides[current].scrollTop = 0;
 
     // Update progress bar
     progress.style.width = ((current + 1) / total * 100) + '%';
@@ -765,15 +851,18 @@ html, body {
     }
   });
 
-  // Touch / swipe support
-  let touchX = 0;
+  // Touch / swipe support (horizontal only, won't conflict with scroll)
+  let touchX = 0, touchY = 0;
   document.addEventListener('touchstart', function(e) {
     touchX = e.changedTouches[0].screenX;
+    touchY = e.changedTouches[0].screenY;
   }, { passive: true });
 
   document.addEventListener('touchend', function(e) {
     const dx = e.changedTouches[0].screenX - touchX;
-    if (Math.abs(dx) > 50) {
+    const dy = e.changedTouches[0].screenY - touchY;
+    // Only trigger swipe if horizontal movement > vertical (not scrolling)
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
       dx < 0 ? next() : prev();
     }
   }, { passive: true });
@@ -829,6 +918,12 @@ html, body {
     if (h >= 1 && h <= total) go(h - 1);
   }
   window.addEventListener('hashchange', readHash);
+
+  // Mobile nav buttons
+  var btnPrev = document.getElementById('btn-prev');
+  var btnNext = document.getElementById('btn-next');
+  if (btnPrev) btnPrev.addEventListener('click', prev);
+  if (btnNext) btnNext.addEventListener('click', next);
 
   // Init
   if (location.hash) readHash(); else go(0);
