@@ -301,6 +301,37 @@ html, body {
   white-space: nowrap;
 }
 
+/* ===== VoInko Showcase ===== */
+.voInko-showcase {
+  position: relative;
+  width: 100%; max-width: 680px;
+  height: clamp(260px, 38vh, 420px);
+  margin: 0 auto;
+}
+.voInko-device {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-58%, -50%);
+}
+.voInko-device img {
+  height: clamp(220px, 32vh, 360px);
+  border-radius: 14px;
+  box-shadow: 0 12px 48px rgba(0,0,0,0.12);
+  object-fit: contain;
+}
+.voInko-app {
+  position: absolute;
+  right: 8%; bottom: -4%;
+  z-index: 2;
+}
+.voInko-app img {
+  height: clamp(160px, 24vh, 280px);
+  border-radius: 20px;
+  box-shadow: 0 8px 36px rgba(0,0,0,0.15);
+  object-fit: contain;
+  border: 3px solid rgba(255,255,255,0.9);
+}
+
 /* ===== Mobile Nav Buttons ===== */
 .mobile-nav {
   display: none; /* hidden on desktop */
@@ -380,6 +411,12 @@ html, body {
   .spacer-l  { height: 24px; }
   .spacer    { height: 16px; }
   .spacer-s  { height: 8px; }
+
+  /* VoInko showcase mobile */
+  .voInko-showcase { height: clamp(200px, 32vh, 300px); }
+  .voInko-device img { height: clamp(160px, 26vh, 240px); }
+  .voInko-app img { height: clamp(120px, 18vh, 180px); }
+  .voInko-app { right: 2%; }
 
   /* Counter & progress */
   .counter { bottom: 10px; right: 14px; font-size: 11px; }
@@ -646,19 +683,16 @@ html, body {
 <div class="section-tag"><span class="tag-num">05</span><span class="tag-label">现在 · 好的与真实的</span></div>
 <div class="inner">
   <div class="fi large" style="margin-bottom: 12px;"><span class="red">VoInko</span></div>
-  <div class="fi mid" style="margin-bottom: 36px;">跟合伙人 · 一个月 · 从零搓出来的</div>
-  <div class="fi" style="display: flex; justify-content: center; align-items: center; gap: clamp(24px, 4vw, 56px); flex-wrap: wrap;">
-    <div style="text-align: center;">
-      <img src="assets/voInko1.png" alt="VoInko 硬件端"
-        style="height: clamp(180px, 30vh, 340px); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.10); object-fit: contain;">
-      <div class="sm" style="margin-top: 12px; color: var(--text);">硬件端 · 墨水屏</div>
+  <div class="fi mid" style="margin-bottom: 40px;">跟合伙人 · 一个月 · 从零搓出来的</div>
+  <div class="fi voInko-showcase">
+    <div class="voInko-device">
+      <img src="assets/voInko1.png" alt="VoInko 硬件端">
     </div>
-    <div style="text-align: center;">
-      <img src="assets/voInko2.png" alt="VoInko APP端"
-        style="height: clamp(180px, 30vh, 340px); border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.10); object-fit: contain;">
-      <div class="sm" style="margin-top: 12px; color: var(--text);">APP端 · 语音输入</div>
+    <div class="voInko-app">
+      <img src="assets/voInko2.png" alt="VoInko APP端">
     </div>
   </div>
+  <div class="fi sm" style="margin-top: 24px;">墨水屏硬件 + 手机APP · 语音即可录入待办</div>
 </div>
 </section>
 
